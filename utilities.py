@@ -11,7 +11,7 @@ from application import db
 import models
 
 current_user = None
-
+readable= True
 def getPray(args):
     '''
     url prams https://aladhan.com/prayer-times-api
@@ -29,6 +29,8 @@ def getPray(args):
     return temp
 
 def getTafseerInRange(args):
+    global readable
+    readable = False
     tafseer_ID=int(args[0])
     sura_number=int(args[1])
     start_ayah_number=int(args[2])
@@ -40,6 +42,8 @@ def getTafseerInRange(args):
     return result
 
 def getText(args):
+    global readable
+    readable = False
     sura_number = int(args[0])
     start_ayah_number = int(args[1])
     result = ""
@@ -49,7 +53,19 @@ def getText(args):
         result += "("+str(start_ayah_number + i)+")"+tafseer['data']['text']+" <br> "
     return result
 
+def read(args):
+    sura_number = int(args[0])
+    start_ayah_number = int(args[1])
+    result = ""
+    for i in range(int(args[2]) - int(args[1]) + 1):
+        url = "http://api.alquran.cloud/v1/ayah/" + str(sura_number) + ":" + str(start_ayah_number + i)+"/ar.alafasy"
+        tafseer = requests.get(url=url).json()
+        result += "(" + str(start_ayah_number + i) + ")" + tafseer['data']['text'] + " <br> "
+    return result
+
 def getMofasreen():
+    global readable
+    readable = False
     url = "http://api.quran-tafseer.com/tafseer"
     list=requests.get(url=url).json()
     counter=1
@@ -83,7 +99,6 @@ def speak(audio_string):
 db.create_all()
 def register(args):
     try:
-
         reg = models.User(username=args[0], password=args[1])
         db.session.add(reg)
         global current_user
@@ -96,9 +111,10 @@ def register(args):
 
 def add_chat(text):
     db.create_all()
-    current_user.body += text
     db.session.add(current_user)
+    current_user.body += text
     db.session.commit()
+    db.session.expire_on_commit = False
 
 def login(args):
     user = models.User.query.filter_by(username=args[0]).first()
@@ -111,3 +127,14 @@ def login(args):
             return "Failed"
     else:
         return "Failed"
+
+def read(args):
+    sura_number = int(args[0])
+    start_ayah_number = int(args[1])
+    if(start_ayah_number != 1 or sura_number != 1):
+        playsound.playsound("https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3")
+    for i in range(int(args[2]) - int(args[1]) + 1):
+        url = "http://api.alquran.cloud/v1/ayah/" + str(sura_number) + ":" + str(start_ayah_number + i)+"/ar.alafasy"
+        tafseer = requests.get(url=url).json()
+        audio=tafseer['data']['audioSecondary'][0]
+        playsound.playsound(audio)
