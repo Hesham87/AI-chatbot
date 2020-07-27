@@ -12,7 +12,7 @@
 
 > topic register_password
 + *
-* <call>register <get username>  <star></call> == Success => register successful.\n
+* <call>register <get username>  <star></call> == Success => register successful.<br>
 ^ please enter the number of the sura you want to read. {topic=sura}
 - username already exists, please choose another one. {topic=register}
 < topic
@@ -24,7 +24,7 @@
 
 > topic login_password
 + *
-* <call>login <get username>  <star></call> == Success => login successful.\n
+* <call>login <get username>  <star></call> == Success => login successful. <br>
 ^ please enter the number of the sura you want to read. {topic=sura}
 - username or password are incorrect. {topic=login}
 < topic
@@ -56,7 +56,7 @@
 
 > topic tafseer
 + *
-- <call>getTafseerInRange <star> <get sura> <get starting_ayah> <get ending_ayah></call>\n
+- <call>getTafseerInRange <star> <get sura> <get starting_ayah> <get ending_ayah></call> <br>
 ^ did you finish reading? {topic=learning}
 < topic
 
@@ -64,15 +64,25 @@
 + yes
 - do you want to see the text while you are reading. {topic=text}
 + no
-- No problem you can go out {topic=end}
+- don't wast my time when you finish tell me.
 + *
 - I am sorry I don't have a reply for that.
 < topic
 
 > topic text
 + yes
-- <call>getText <get sura> <get starting_ayah> <get ending_ayah></call>\n
-^learning to read is currently under development. {topic=end}
+- <call>getText <get sura> <get starting_ayah> <get ending_ayah></call> <br>
+^ do you want to hear the correct reading?. {topic=read}
++ no
+- do you want to hear the correct reading?. {topic=read}
++ *
+- I am sorry I don't have a reply for that.
+< topic
+
+> topic read
++ yes
+- <call>read <get sura> <get starting_ayah> <get ending_ayah></call>
+^ learning to read is currently under development. {topic=end}
 + no
 - learning to read is currently under development. {topic=end}
 + *
@@ -107,4 +117,9 @@
 > object register python
     from utilities import register
     return register(args)
+< object
+
+> object read python
+    from utilities import read
+    return read(args)
 < object
