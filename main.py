@@ -20,15 +20,18 @@ def get_bot_response():
         print(userText)
         bot_reply = str(Bot.reply('localuser', userText))
         audio_bot = ""
-        i = 0
-        while i < len(bot_reply):
-            if bot_reply[i] == "<" and bot_reply[i + 1] == "b" and bot_reply[i + 2] == "r" and bot_reply[i + 3] == ">":
-                i = i + 3
-            else:
-                audio_bot += bot_reply[i]
-            i += 1
 
-        utilities.speak(audio_bot)
+        if (utilities.readable):
+            i = 0
+            while i < len(bot_reply):
+                if bot_reply[i] == "<" and bot_reply[i + 1] == "b" and bot_reply[i + 2] == "r" and bot_reply[i + 3] == ">":
+                    i = i + 3
+                else:
+                    audio_bot += bot_reply[i]
+                i += 1
+            utilities.speak(audio_bot)
+        else:
+            utilities.readable = True
 
         reply = "-++"+userText+"++-"+bot_reply
         if utilities.current_user != None:
@@ -37,14 +40,18 @@ def get_bot_response():
     else:
         bot_reply=str(Bot.reply('localuser', userText))
         audio_bot=""
-        i = 0
-        while i < len(bot_reply):
-            if bot_reply[i] == "<" and bot_reply[i + 1] == "b" and bot_reply[i + 2] == "r" and bot_reply[i + 3] == ">":
-                i = i+3
-            else:
-                audio_bot += bot_reply[i]
-            i += 1
-        utilities.speak(audio_bot)
+
+        if(utilities.readable):
+            i = 0
+            while i < len(bot_reply):
+                if bot_reply[i] == "<" and bot_reply[i + 1] == "b" and bot_reply[i + 2] == "r" and bot_reply[i + 3] == ">":
+                    i = i+3
+                else:
+                    audio_bot += bot_reply[i]
+                i += 1
+            utilities.speak(audio_bot)
+        else:
+            utilities.readable = True
         if utilities.current_user != None:
             utilities.add_chat("+ " + userText + "<br>" + "- " + bot_reply)
         return bot_reply
