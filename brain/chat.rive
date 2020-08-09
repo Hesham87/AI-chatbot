@@ -1,55 +1,55 @@
 ! version= 2.0
 
 + *
-* <star> == login => ok, what is your username? {topic=login}
-* <star> == register => ok, please enter a username. {topic=register}
+* <star> == login => Ok, what is your username? {topic=login}
+* <star> == register => Ok, please enter a username. {topic=register}
 - I am sorry I don't have a reply for that.
 
 > topic register
 + *
-- <set username=<formal>>please enter your password. {topic=register_password}
+- <set username=<formal>>Please enter your password. {topic=register_password}
 < topic
 
 > topic register_password
 + *
-* <call>register <get username>  <star></call> == Success => register successful.<br>
-^ please enter the number of the sura you want to read. {topic=sura}
-- username already exists, please choose another one. {topic=register}
+* <call>register <get username>  <star></call> == Success => Register successful.<br>
+^ Please enter the number of the sura you want to read. {topic=sura}
+- Username already exists, please choose another one. {topic=register}
 < topic
 
 > topic login
 + *
-- <set username=<formal>>please enter your password. {topic=login_password}
+- <set username=<formal>>Please enter your password. {topic=login_password}
 < topic
 
 > topic login_password
 + *
-* <call>login <get username>  <star></call> == Success => login successful. <br>
-^ please enter the number of the sura you want to read. {topic=sura}
-- username or password are incorrect. {topic=login}
+* <call>login <get username>  <star></call> == Success => Login successful. <br>
+^ Please enter the number of the sura you want to read. {topic=sura}
+- Username or password are incorrect. {topic=login}
 < topic
 
 > topic sura
 + *
-- <set sura=<formal>>please enter the number of the ayah at which you are starting. {topic=starting_ayah}
+- <set sura=<formal>>Please enter the number of the ayah at which you are starting. {topic=starting_ayah}
 < topic
 
 > topic starting_ayah
 + *
-- <set starting_ayah=<formal>>please enter the number of the ayah at which you are planning to end. {topic=ending_ayah}
+- <set starting_ayah=<formal>>Please enter the number of the ayah at which you are planning to end. {topic=ending_ayah}
 <topic
 
 > topic ending_ayah
 + *
-- <set ending_ayah=<formal>>do you want to read the tafseer first before starting to read? {topic=mofaseer}
+- <set ending_ayah=<formal>>Do you want to read the tafseer first before starting to read? {topic=mofaseer}
 < topic
 
 > topic mofaseer
 + yes
-- <call>getMofasreen</call>\n
-^ choose the number of the mofaseer you want. {topic=tafseer}
+- <call>getMofasreen</call> <br>
+^ Choose the number of the mofaseer you want. {topic=tafseer}
 + no
-- no problem, you want to start learning now? {topic=learning}
+- No problem, you want to start learning now? {topic=learning}
 + *
 - I am sorry I don't have a reply for that.
 < topic
@@ -57,14 +57,14 @@
 > topic tafseer
 + *
 - <call>getTafseerInRange <star> <get sura> <get starting_ayah> <get ending_ayah></call> <br>
-^ did you finish reading? {topic=learning}
+^ Did you finish reading? {topic=learning}
 < topic
 
 > topic learning
 + yes
-- do you want to see the text while you are reading. {topic=text}
+- Do you want to see the text while you are reading. {topic=text}
 + no
-- don't wast my time when you finish tell me.
+- Don't wast my time when you finish tell me.
 + *
 - I am sorry I don't have a reply for that.
 < topic
@@ -72,21 +72,32 @@
 > topic text
 + yes
 - <call>getText <get sura> <get starting_ayah> <get ending_ayah></call> <br>
-^ do you want to hear the correct reading?. {topic=read}
+^ Do you want to hear the correct reading?. {topic=read}
 + no
-- do you want to hear the correct reading?. {topic=read}
+- Do you want to hear the correct reading?. {topic=read}
 + *
 - I am sorry I don't have a reply for that.
 < topic
 
 > topic read
 + yes
-- <call>read <get sura> <get starting_ayah> <get ending_ayah></call>
-^ learning to read is currently under development. {topic=end}
+- Which audio do you want to hear? <br>
+^ 1) Low quality. (there will be a few miliseconds pauses before starting each ayah.) <br>
+^ 2) High quality. (concatinate all the ayahs into one audio to remove the pauses.) <br>
+^ Note: the high quality may take a few seconds before starting. {topic=quality}
 + no
-- learning to read is currently under development. {topic=end}
+- Learning to read is currently under development. {topic=end}
 + *
 - I am sorry I don't have a reply for that.
+< topic
+
+> topic quality
++ 1
+- <call>read <get sura> <get starting_ayah> <get ending_ayah></call>
+^ learning to read is currently under development. {topic=end}
++ 2
+- <call>read_Quality <get sura> <get starting_ayah> <get ending_ayah></call>
+^ learning to read is currently under development. {topic=end}
 < topic
 
 > topic end
@@ -122,4 +133,9 @@
 > object read python
     from utilities import read
     return read(args)
+< object
+
+> object read_Quality python
+    from utilities import read_Quality
+    return read_Quality(args)
 < object
