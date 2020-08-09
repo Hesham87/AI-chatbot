@@ -9,6 +9,8 @@ from gtts import gTTS
 from flask_sqlalchemy import SQLAlchemy
 from application import db
 import models
+from pydub import AudioSegment
+import pydub
 
 current_user = None
 readable= True
@@ -131,10 +133,34 @@ def login(args):
 def read(args):
     sura_number = int(args[0])
     start_ayah_number = int(args[1])
+    end_ayah_number = int(args[2])
     if(start_ayah_number != 1 or sura_number != 1):
         playsound.playsound("https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3")
+    url = "http://api.alquran.cloud/v1/surah/" + str(sura_number) + "/ar.alafasy?offset=" + str(start_ayah_number - 1) + "&limit=" + str(end_ayah_number - start_ayah_number + 1)
+    data = requests.get(url=url).json()
     for i in range(int(args[2]) - int(args[1]) + 1):
-        url = "http://api.alquran.cloud/v1/ayah/" + str(sura_number) + ":" + str(start_ayah_number + i)+"/ar.alafasy"
-        tafseer = requests.get(url=url).json()
-        audio=tafseer['data']['audioSecondary'][0]
-        playsound.playsound(audio)
+        src1 = data['data']['ayahs'][:][i]['audioSecondary'][0]
+        playsound.playsound(src1)
+
+def read_Quality(args):
+    pydub.AudioSegment.converter = r"C:\\ffmpeg\\bin\\ffmpeg.exe"
+    sura_number = int(args[0])
+    start_ayah_number = int(args[1])
+    end_ayah_number = int(args[2])
+    if (start_ayah_number != 1 or sura_number != 1):
+        start_ayah_number+=1
+    src="https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3"
+    open('1.mp3', 'wb').write(requests.get(src, allow_redirects=True).content)
+    audio=AudioSegment.from_mp3("1.mp3")
+    url = "http://api.alquran.cloud/v1/surah/" + str(sura_number) + "/ar.alafasy?offset=" + str(start_ayah_number - 1) + "&limit=" + str(end_ayah_number - start_ayah_number + 1)
+    data = requests.get(url=url).json()
+    for i in range(int(args[2]) - int(args[1]) + 1):
+        try:
+            src1 = data['data']['ayahs'][:][i]['audioSecondary'][0]
+            open('audio1.mp3', 'wb').write(requests.get(src1, allow_redirects=True).content)
+            audio += AudioSegment.from_mp3("audio1.mp3")
+        except:
+            break
+
+    audio.export("audio.mp3", format="mp3")
+    playsound.playsound("audio.mp3")
